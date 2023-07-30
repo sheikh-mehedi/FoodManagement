@@ -1,0 +1,47 @@
+﻿@model FoodManagement2.Models.Food
+
+<h1>Create</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div class="form-group mb-2">
+                <label asp-for="NAME" class="control-label"></label>
+                <input asp-for="NAME" class="form-control" />
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="PRICE" class="control-label"></label>
+                <input asp-for="PRICE" class="form-control" />
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="QTY" class="control-label"></label>
+                <input asp-for="QTY" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" accept="image/*"
+                       onchange="document.getElementById('logo').src = window.URL.createObjectURL(this.files[0])" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+
+            </div>
+
+
+            <div>
+                <img class="rounded-circle" id="logo" src="https://upload.wikimedia.org/wikipedia/commons/b/b9/No_sign_Right.svg"
+                     alt="example placeholder" width="80" height="80" />
+
+            </div>
+           
+
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,494 @@
+﻿@model IEnumerable<FoodManagement2.Models.Food>
+
+
+
+<div class="row">
+    <div class="col-md-8 ">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class=" col-md-4">
+
+
+
+                    <div class="card" style="width: 18rem;">
+
+                        <img decoding="async" src="@("~/Image/"+item.IMAGE)" asp-append-version="true" width="200px" height="200px" class="card-img-top" />
+                        <div class="card-body">
+                            <h5 class="card-title">@item.NAME</h5>
+                            <p>
+                                Price: @item.PRICE tk Only <br />
+                                Qty: @item.QTY Pcs
+                            </p>
+
+                            <i class=" bal fa fa-plus-circle" onclick="addItem(@item.F_ID,`@item.NAME`,@item.PRICE,@item.QTY,`@item.IMAGE`)" style="font-size:24px"></i>
+                            <i class="fa fa-minus-circle" style="font-size:24px" onclick="removeItem(@item.F_ID,`@item.NAME`,@item.PRICE,@item.QTY,`@item.IMAGE`)" ></i>
+
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <div class="col-md-4  " id="voucher">
+        <table class="table-sm table" id="myTable">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Item-Name</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody id="itemContainer">
+            </tbody>
+            <tfoot  >
+                <tr style="font-weight: bold; background-color: red;">
+                    <td>Total </td>
+                    <td></td>
+                    <td id="totQty"></td>
+                    <td id="totPrice"></td>
+                </tr>
+                <tr >
+                    <td> </td>
+                    <td></td>
+                    <td ></td>
+                    <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy</button></td>  
+                </tr>
+
+            </tfoot>
+        </table>
+    </div>
+
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Your Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control form-control-sm" type="text" id ="name" placeholder="Name" aria-label=".form-control-sm example">
+                    <input class="form-control form-control-sm" type="text"  id ="mobile"placeholder="Mobile No" aria-label=".form-control-sm example">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id ="btn" class="btn btn-primary">Confirm Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function addItem(id, name, price, qty, image) {
+            
+            var itemlist = [];
+
+            var existList = $(".foodId").text();
+            debugger;
+            if (existList != null && existList != undefined && existList != "") {
+                var arr = existList.split("/");
+                var FoodId = arr.filter(function (item) {
+                    return item === id.toString();
+                });
+
+                if (FoodId[0] == id) {
+
+                    const tableId = "myTable";
+                    const columnHeaderText = "Item-Name";
+                    const valueToFind = name;
+                    const columnHeaderTextQty = "Qty";
+                    const columnHeaderTextPrice = "Price";
+                    const rowNumber = getRowNumberByColumnValue(tableId, columnHeaderText, valueToFind);
+                   
+
+                    var existFoodQty = getValueByRowAndHeader(tableId, rowNumber, columnHeaderTextQty);
+                   
+                    var existFoodPrice = getValueByRowAndHeader(tableId, rowNumber, columnHeaderTextPrice);
+                    
+
+                    existFoodQty = parseInt(existFoodQty) + 1;
+                    existFoodPrice = parseFloat(price) * parseFloat(existFoodQty);
+
+                    if (qty >= existFoodQty){
+                     setValueByRowAndHeader(tableId, rowNumber, columnHeaderTextQty, existFoodQty);
+                    setValueByRowAndHeader(tableId, rowNumber, columnHeaderTextPrice, existFoodPrice);
+                    
+                        
+                    }
+                    
+                    else{
+                        alert("You can take maximum " +qty+" Quantity");
+                    }
+                    
+                    
+
+                } else {
+                    debugger;
+                    var wordsArray = existList.split("/");
+                    var filteredArray = wordsArray.filter(function (item) {
+                        return item === id.toString(); // Returns elements with length greater than 5 characters
+                    });
+                    if (filteredArray.length > 0) {
+                        //var existFoodQty = $(".foodQty").text();
+                        //var existFoodPrice = $(".foodPrice").text();
+                    }
+                    else {
+                        var itemobj = {
+                            foodID: id,
+                            foodName: name,
+                            foodPrice: price,
+                            foodqty: 1,
+                            foodImage: image
+
+                        }
+
+                        itemlist.push(itemobj);
+                    }
+                    //if (exist != null && exist != undefined) {
+                    //    exist.foodqty = parseint(exist.foodqty) + 1;
+                    //    exist.foodprice = parsefloat(exist.foodprice) * parsefloat(exist.foodqty);
+                    //}
+                }
+
+            }
+            else {
+                var itemobj = {
+                    foodID: id,
+                    foodName: name,
+                    foodPrice: price,
+                    foodqty: 1,
+                    foodImage: image
+
+                }
+
+                itemlist.push(itemobj);
+            }
+
+
+
+
+
+            itemlist.forEach(item => {
+                var res = `<tr>
+                                 <td class='foodId' hidden>${item.foodID + '/'}</td>
+                                 <td><img   src="/image/${item.foodImage}" class="rounded-circle width="40px" height="40px"></td>
+                                 <td class='foodName'>${item.foodName}</td>
+                                 <td class='foodQty'>${item.foodqty} </td>
+                                 <td class='foodPrice'>${item.foodPrice}</td>
+                          </tr>`
+                debugger;
+
+                $("#itemContainer").append(res);
+
+
+            });
+
+
+            TotalQty('myTable', 'Qty');
+            TotalPrice('myTable', 'Price');
+
+        }
+
+        function removeItem(id, name, price, qty, image) {
+            debugger;
+            var tId = "myTable";
+            var headerItem = "Item-Name";
+            var headerQty = "Qty";
+            var findVal = name;
+            var table = document.getElementById("myTable");
+            debugger;
+            const row = getRowNumberByColumnValue(tId, headerItem, findVal);
+            var existQty = getValueByRowAndHeader(tId, row, headerQty);
+            if(existQty < 1){
+                alert("Please add item");
+                disableOnClick();
+            }
+            else if (existQty == 1) {
+                table.deleteRow(row);
+            }
+            else{
+
+                var itemlist = [];
+
+                var existList = $(".foodId").text();
+                debugger;
+                if (existList != null && existList != undefined && existList != "") {
+                    var arr = existList.split("/");
+                    var FoodId = arr.filter(function (item) {
+                        return item === id.toString();
+                    });
+
+                    if (FoodId[0] == id) {
+
+                        const tableId = "myTable";
+                        const columnHeaderText = "Item-Name";
+                        const valueToFind = name;
+                        const columnHeaderTextQty = "Qty";
+                        const columnHeaderTextPrice = "Price";
+                        const rowNumber = getRowNumberByColumnValue(tableId, columnHeaderText, valueToFind);
+
+
+                        var existFoodQty = getValueByRowAndHeader(tableId, rowNumber, columnHeaderTextQty);
+
+                        var existFoodPrice = getValueByRowAndHeader(tableId, rowNumber, columnHeaderTextPrice);
+
+
+                        existFoodQty = parseInt(existFoodQty) - 1;
+                        existFoodPrice = parseFloat(price) * parseFloat(existFoodQty);
+
+                        if (qty >= existFoodQty) {
+                            setValueByRowAndHeader(tableId, rowNumber, columnHeaderTextQty, existFoodQty);
+                            setValueByRowAndHeader(tableId, rowNumber, columnHeaderTextPrice, existFoodPrice);
+
+
+                        }
+
+
+
+                    }
+                    else {
+                        debugger;
+                        var wordsArray = existList.split("/");
+                        var filteredArray = wordsArray.filter(function (item) {
+                            return item === id.toString(); // Returns elements with length greater than 5 characters
+                        });
+
+                    }
+
+                }
+                else {
+                    var itemobj = {
+                        foodID: id,
+                        foodName: name,
+                        foodPrice: price,
+                        foodqty: 1,
+                        foodImage: image
+
+                    }
+
+                    itemlist.push(itemobj);
+                }
+
+
+
+
+
+                itemlist.forEach(item => {
+                    var res = `<tr>
+                                         <td class='foodId' hidden>${item.foodID + '/'}</td>
+                                         <td><img   src="/image/${item.foodImage}" class="rounded-circle width="40px" height="40px"></td>
+                                         <td class='foodName'>${item.foodName}</td>
+                                         <td class='foodQty'>${item.foodqty} </td>
+                                         <td class='foodPrice'>${item.foodPrice}</td>
+                                  </tr>`
+                    debugger;
+
+                    $("#itemContainer").append(res);
+
+
+                });
+
+            }
+            TotalQty('myTable', 'Qty');
+            TotalPrice('myTable', 'Price');
+        }
+
+
+        function TotalQty(tId,colName) {
+            debugger;
+            const table = document.getElementById(tId);
+            const headers = table.querySelectorAll("thead th");
+            let columnIndex = -1;
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].textContent === colName) {
+                    columnIndex = i;
+                    break;
+                }
+            }
+            let totalSum = 0;
+
+            if (columnIndex !== -1) {
+                const rows = table.querySelectorAll("tbody tr");
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].querySelectorAll("td");
+                    if (columnIndex < cells.length) {
+                        const cellValue = cells[columnIndex + 1].innerText.trim();
+                        if (!isNaN(cellValue)) {
+                            totalSum += parseInt(cellValue);
+                        }
+                    }
+                }
+            }
+            const element = document.getElementById('totQty');
+            element.innerText = totalSum;
+
+        }
+        function TotalPrice(tId, colName) {
+
+            const table = document.getElementById(tId);
+            const headers = table.querySelectorAll("thead th");
+            let columnIndex = -1;
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].textContent === colName) {
+                    columnIndex = i;
+                    break;
+                }
+            }
+            let totalSum = 0;
+
+            if (columnIndex !== -1) {
+                const rows = table.querySelectorAll("tbody tr");
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].querySelectorAll("td");
+                    if (columnIndex < cells.length) {
+                        const cellValue = cells[columnIndex + 1].innerText.trim();
+                        if (!isNaN(cellValue)) {
+                            totalSum += parseInt(cellValue);
+                        }
+                    }
+                }
+            }
+            var element = document.getElementById('totPrice');
+            element.innerText = totalSum;
+        }
+
+
+
+
+        function getRowNumberByColumnValue(tableId, columnHeaderText, value) {
+            const table = document.getElementById(tableId);
+            const headers = table.querySelectorAll("thead th");
+            let columnIndex = -1;
+
+            // Find the index of the column based on its header text
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].textContent === columnHeaderText) {
+                    columnIndex = i;
+                    break;
+                }
+            }
+
+            // If the column is found, search for the value in the column
+            if (columnIndex !== -1) {
+                const rows = table.querySelectorAll("tbody tr");
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].querySelectorAll("td");
+                    if (columnIndex < cells.length) {
+                        const cellValue = cells[columnIndex + 1].innerText.trim();
+                        if (cellValue === value) {
+                            // Return the row number (1-based index)
+                            return i + 1;
+                        }
+                    }
+                }
+            }
+
+            // If value not found or column not found, return -1
+            return -1;
+
+        }
+        function getValueByRowAndHeader(tableId, rowNumber, columnHeaderText) {
+            const table = document.getElementById(tableId);
+            const headers = table.querySelectorAll("thead th");
+            let columnIndex = -1;
+
+            // Find the index of the column based on its header text
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].textContent === columnHeaderText) {
+                    columnIndex = i;
+                    break;
+                }
+            }
+
+            // If the column is found, get the cell value by row number and column index
+            if (columnIndex !== -1) {
+                const rows = table.querySelectorAll("tbody tr");
+                if (rowNumber > 0 && rowNumber <= rows.length) {
+                    const cells = rows[rowNumber - 1].querySelectorAll("td");
+                    if (columnIndex < cells.length) {
+                        const cellValue = cells[columnIndex+1].innerText.trim();
+                        return cellValue;
+                    }
+                }
+            }
+
+            // If cell value not found or column not found, return an empty string
+            return "";
+        }
+
+        function setValueByRowAndHeader(tableId, rowNumber, columnHeaderText, newValue) {
+            const table = document.getElementById(tableId);
+            const headers = table.querySelectorAll("thead th");
+            let columnIndex = -1;
+
+            // Find the index of the column based on its header text
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].textContent === columnHeaderText) {
+                    columnIndex = i;
+                    break;
+                }
+            }
+
+            // If the column is found, set the cell value by row number and column index
+            if (columnIndex !== -1) {
+                const rows = table.querySelectorAll("tbody tr");
+                if (rowNumber > 0 && rowNumber <= rows.length) {
+                    const cells = rows[rowNumber - 1].querySelectorAll("td");
+                    if (columnIndex < cells.length) {
+                        cells[columnIndex+1].innerText = newValue;
+                    }
+                }
+            }
+        }
+
+
+        $("#btn").click(function(){
+             debugger;
+            var result = $("#name").val();
+            var document = $("#mobile").val();
+            console.log(result);
+
+            if (result !== "") {
+                $.ajax({
+                    url: '/Foods/GetClassByFood',
+                    type: 'post',
+                    data: { result: result },
+                    success: function (data) {
+                         
+                    }
+                });
+            }
+        });
+
+    </script>
+
+
+
+
+}
+
+
+
+

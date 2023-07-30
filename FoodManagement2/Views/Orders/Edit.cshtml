@@ -1,0 +1,49 @@
+﻿@model FoodManagement2.Models.Order
+
+
+<h1>Edit</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <input type="hidden" asp-for="O_ID" />
+
+           
+            <div class="form-group mb-2">
+                <label asp-for="ORDER_QTY" class="control-label"></label>
+                <input asp-for="ORDER_QTY" class="form-control" />
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="PRICE" class="control-label"></label>
+                <input asp-for="PRICE" class="form-control" />
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="STATUS" class="control-label"></label>
+                <input asp-for="STATUS" class="form-control" />
+            </div>
+            <div class="form-group mb-2">
+                <label>CHOOSE YOUR FOOD NAME</label>
+                <select asp-for="F_ID" asp-items="@(new SelectList(ViewBag.fod, "F_ID","NAME"))" class="form-select">
+                    <option selected disabled>SELECT FOOD</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-2">
+                <label>CHOOSE YOUR CUSTOMER NAME</label>
+                <select asp-for="C_ID" asp-items="@(new SelectList(ViewBag.custom, "C_ID","C_NAME"))" class="form-select">
+                    <option selected disabled>SELECT CUSTOMER</option>
+                </select>
+            </div>
+
+         
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-success mt" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

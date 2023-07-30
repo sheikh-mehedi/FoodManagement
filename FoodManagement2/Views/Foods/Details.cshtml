@@ -1,0 +1,18 @@
+﻿@model FoodManagement2.Models.Food
+
+
+<div class="card" style="width: 18rem;">
+    <img decoding="async" src="@("~/Image/"+@Model.IMAGE)" asp-append-version="true" width="200px" height="200px" class="card-img-top" />
+    <div class="card-body">
+        <h5 class="card-title">@Model.NAME</h5>
+        <p>Price: @Model.PRICE tk Only <br/>
+        Qty: @Model.QTY Pcs</p>
+       
+    </div>
+</div>
+
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.F_ID" class="btn btn-danger">Edit</a>
+    <a asp-action="Index" class="btn btn-success">Back to List</a>
+</div>
